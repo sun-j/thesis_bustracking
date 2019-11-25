@@ -8,7 +8,7 @@ def GetDistance(bbox = [], point = [], direction=1):
 
     #calculate the distance from the center of the box to the bus stop
     front = bbox[2]
-    distance = point[1] - front*direction
+    distance = point[0] - front*direction
 
     return distance
     

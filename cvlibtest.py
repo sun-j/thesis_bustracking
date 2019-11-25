@@ -32,7 +32,7 @@ while True:
     # Initialise the holding variables as lists
     _bbox, _label, _conf, _distance, _points = [], [], [], [], []
     for i in range(len(label)): 
-        if (label[i] == 'bus') and (FilterSquare(bbox[i])): 
+        if (label[i] == 'bus') and (FilterSquare(bbox[i], target)): 
             _label.append(label[i])
             _bbox.append(bbox[i])
             _conf.append(conf[i]) 
