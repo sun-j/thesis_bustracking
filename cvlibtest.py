@@ -6,6 +6,7 @@ from SetApex import SetApex
 from GetDistance import GetDistance
 from GetPoints import GetPoints
 from BusStatus import BusStatus
+from BusKalman import BusKalman
 
 video_src='s_bus_stopped.mp4'
 
@@ -27,6 +28,11 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 # Current assumption is that we don't have multiple busses
 oldDistance = 0
 
+time = 0
+
+bus = BusKalman(time)
+
+# Loop that runs the video
 while True: 
     ret,img=cap.read()
 
@@ -53,6 +59,8 @@ while True:
     for points in _points:
         # print(points) 
         cv2.line(output_image, points[0], points[1], (0, 255, 0), 9)
+        bus.update(time, points[0][0])
+        cv2.drawMarker(output_image,(int(bus.estimate_position),points[0][1]),(255,0,0), cv2.MARKER_CROSS)
 
     #Print the distances from the busses
     for distance in _distance: 
@@ -67,6 +75,8 @@ while True:
 
     if cv2.waitKey(33)==27:
         break
+
+    time += 1
 
 cap.release()
 out.release()
