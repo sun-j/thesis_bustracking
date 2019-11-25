@@ -1,6 +1,7 @@
 import cvlib as cv
 from cvlib.object_detection import draw_bbox
 import cv2
+from FilterSquare import FilterSquare
 
 video_src='s_lowelevation.MOV'
 
@@ -19,18 +20,19 @@ while True:
     if(type(img) == type(None)):
         break
 
-    
     bbox, label, conf = cv.detect_common_objects(img)
+
     # Initialise the holding variables as lists
     _bbox, _label, _conf = [], [], []
     for i in range(len(label)): 
-        if label[i] == 'bus': 
+        if (label[i] == 'bus') and (FilterSquare(bbox[i])): 
             _label.append(label[i])
             _bbox.append(bbox[i])
-            _conf.append(conf[i])
+            _conf.append(conf[i]) 
+
+    # print(_bbox)
 
     output_image = draw_bbox(img, _bbox, _label, _conf)
-
 
     cv2.imshow('video',output_image)
     # cv.imshow('video', binary)
