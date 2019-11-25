@@ -7,6 +7,11 @@ class BusKalman:
         self.iterations = 0
         self.stopped = 0
         self.fps = (1/30)
+        self.size = 0
+        self.buspos = 0
+        self.targetpos = 0
+        self.distance = 0
+        self.height = 0
 
         # Model
         # Estimates
@@ -61,7 +66,7 @@ class BusKalman:
         self.start = time
         self.iterations += 1
         
-        print(str(self.estimate_position) + '  ' + str(self.estimate_velocity))
+        # print(str(self.estimate_position) + '  ' + str(self.estimate_velocity))
 
     def BusStatus(self, threshold = 5):
         if self.estimate_velocity < threshold:
@@ -73,3 +78,17 @@ class BusKalman:
             time = self.stopped*self.fps
             return 'Bus Moving ' + "{0:.2f}".format(round(time,2)) + 's'
 
+    def UpdateParams(self, bbox = [], target = [], direction=1): 
+        if bbox:
+            self.size = 12.5 / (bbox[0][2] - bbox[0][0])
+            self.height = int(bbox[0][3] - (bbox[0][3] - bbox[0][1])/2)
+        print (self.size)
+        print(bbox)
+
+        front = int(self.estimate_position)
+        
+        self.buspos = (front, self.height)
+        self.targetpos = (target[0], self.height)
+
+        distance = (target[0] - front*direction) * self.size
+        self.distance = round(distance, 2)

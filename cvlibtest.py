@@ -10,6 +10,8 @@ from BusKalman import BusKalman
 
 video_src='s_bus_stopped.mp4'
 
+print('Starting Video: ' + video_src)
+
 cap=cv2.VideoCapture(video_src)
 
 frame_width = int(cap.get(3))
@@ -49,35 +51,29 @@ while True:
             _label.append(label[i])
             _bbox.append(bbox[i])
             _conf.append(conf[i]) 
-            _distance.append(GetDistance(bbox[i], target))
+            #_distance.append(GetDistance(bbox[i], target))
             _points.append(GetPoints(bbox[i], target))
 
     # print(_bbox)
 
     output_image = draw_bbox(img, _bbox, _label, _conf)
-
+    cv2.drawMarker(output_image,target,(0,0,255), cv2.MARKER_CROSS)
     #Print the line from the bus to the target
     for points in _points:
         # print(points) 
-        if(points[0][0] < frame_width*0.95):
+        if(points[0][0] < frame_width*0.95) and (points[0][0] > frame_width*0.2):
             isbus = True
-            cv2.line(output_image, points[0], points[1], (0, 255, 0), 9)
-        
         else: 
             isbus = False
             bus.stopped = 0
     
     if isbus == True: 
         bus.update(time, points[0][0])
+        bus.UpdateParams(_bbox, target)
         cv2.drawMarker(output_image,(int(bus.estimate_position),points[0][1]),(255,0,0), cv2.MARKER_CROSS)
         cv2.putText(output_image, bus.BusStatus(), (10, 30), font, 0.65, (0, 0, 255), 1, cv2.LINE_AA)
-
-    #Print the distances from the busses
-    for distance in _distance: 
-        cv2.putText(output_image, str(distance), target, font, 0.5, (255,255,255),2,cv2.LINE_AA)
-        # cv2.putText(output_image, BusStatus(distance, oldDistance), (10, 30), font, 0.65, (0, 0, 255), 1, cv2.LINE_AA)
-        
-        oldDistance = distance
+        cv2.line(output_image, (bus.buspos), (bus.targetpos), (0, 255, 0), 9)
+        cv2.putText(output_image, str(bus.distance) + 'm', target, font, 0.5, (255,255,255),2,cv2.LINE_AA)
 
     cv2.imshow('video',output_image)
     # cv.imshow('video', binary)
