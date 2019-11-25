@@ -5,8 +5,9 @@ from FilterSquare import FilterSquare
 from SetApex import SetApex
 from GetDistance import GetDistance
 from GetPoints import GetPoints
+from BusStatus import BusStatus
 
-video_src='s_lowelevation.MOV'
+video_src='s_bus_stopped.mp4'
 
 cap=cv2.VideoCapture(video_src)
 
@@ -20,6 +21,11 @@ ret,img=cap.read()
 # print(target)
 #bus_cascade=cv2.CascadeClassifier(cascade_src)
 target = (456, 207)
+
+font = cv2.FONT_HERSHEY_SIMPLEX
+
+# Current assumption is that we don't have multiple busses
+oldDistance = 0
 
 while True: 
     ret,img=cap.read()
@@ -43,13 +49,17 @@ while True:
 
     output_image = draw_bbox(img, _bbox, _label, _conf)
 
+    #Print the line from the bus to the target
     for points in _points:
         # print(points) 
-        output_image = cv2.line(output_image, points[0], points[1], (0, 255, 0), 9)
+        cv2.line(output_image, points[0], points[1], (0, 255, 0), 9)
 
-    font = cv2.FONT_HERSHEY_SIMPLEX
+    #Print the distances from the busses
     for distance in _distance: 
-        output_image = cv2.putText(img, str(distance), target, font, 0.5, (255,255,255),2,cv2.LINE_AA)
+        cv2.putText(output_image, str(distance), target, font, 0.5, (255,255,255),2,cv2.LINE_AA)
+        cv2.putText(output_image, BusStatus(distance, oldDistance), (10, 30), font, 0.65, (0, 0, 255), 1, cv2.LINE_AA)
+        
+        oldDistance = distance
 
     cv2.imshow('video',output_image)
     # cv.imshow('video', binary)
