@@ -4,7 +4,7 @@ import numpy as np
 
 def GetDistance(bbox = [], point = [], direction=1):
     # print(bbox) 
-    print(point)
+    # print(point)
 
     #calculate the distance from the center of the box to the bus stop
     front = bbox[2]

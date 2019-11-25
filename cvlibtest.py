@@ -5,7 +5,7 @@ from FilterSquare import FilterSquare
 from SetApex import SetApex
 from GetDistance import GetDistance
 from GetPoints import GetPoints
-from BusStatus import BusStatus
+from BusStatus import BusStatusVel
 from BusKalman import BusKalman
 
 video_src='s_bus_stopped.mp4'
@@ -31,6 +31,7 @@ oldDistance = 0
 time = 0
 
 bus = BusKalman(time)
+isbus = False
 
 # Loop that runs the video
 while True: 
@@ -58,14 +59,23 @@ while True:
     #Print the line from the bus to the target
     for points in _points:
         # print(points) 
-        cv2.line(output_image, points[0], points[1], (0, 255, 0), 9)
+        if(points[0][0] < frame_width*0.95):
+            isbus = True
+            cv2.line(output_image, points[0], points[1], (0, 255, 0), 9)
+        
+        else: 
+            isbus = False
+            bus.stopped = 0
+    
+    if isbus == True: 
         bus.update(time, points[0][0])
         cv2.drawMarker(output_image,(int(bus.estimate_position),points[0][1]),(255,0,0), cv2.MARKER_CROSS)
+        cv2.putText(output_image, bus.BusStatus(), (10, 30), font, 0.65, (0, 0, 255), 1, cv2.LINE_AA)
 
     #Print the distances from the busses
     for distance in _distance: 
         cv2.putText(output_image, str(distance), target, font, 0.5, (255,255,255),2,cv2.LINE_AA)
-        cv2.putText(output_image, BusStatus(distance, oldDistance), (10, 30), font, 0.65, (0, 0, 255), 1, cv2.LINE_AA)
+        # cv2.putText(output_image, BusStatus(distance, oldDistance), (10, 30), font, 0.65, (0, 0, 255), 1, cv2.LINE_AA)
         
         oldDistance = distance
 

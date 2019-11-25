@@ -1,8 +1,12 @@
+# Adapted from https://gist.github.com/manicai/922976
+
 class BusKalman:
     def __init__(self, time, pos = 0):
         self.start = time
         self.time_step = 1
         self.iterations = 0
+        self.stopped = 0
+        self.fps = (1/30)
 
         # Model
         # Estimates
@@ -15,9 +19,9 @@ class BusKalman:
         self.P_vv = 0.1 # Variance of the velocity
 
         # Model parameters
-        self.position_process_variance = 0.01
-        self.velocity_process_variance = 0.01
-        self.R = 30.0 # Measurement noise variance
+        self.position_process_variance = 0.1
+        self.velocity_process_variance = 0.1
+        self.R = 5 # Measurement noise variance
 
     def update(self, time, pos):
         # We need to boot strap the estimates for temperature and
@@ -57,6 +61,15 @@ class BusKalman:
         self.start = time
         self.iterations += 1
         
-        print(self.estimate_position)
+        print(str(self.estimate_position) + '  ' + str(self.estimate_velocity))
 
+    def BusStatus(self, threshold = 5):
+        if self.estimate_velocity < threshold:
+            self.stopped+=1
+            time = self.stopped*self.fps
+
+            return 'Bus Stopped ' + "{0:.2f}".format(round(time,2)) + 's'
+        else:
+            time = self.stopped*self.fps
+            return 'Bus Moving ' + "{0:.2f}".format(round(time,2)) + 's'
 
