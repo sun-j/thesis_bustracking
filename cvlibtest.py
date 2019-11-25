@@ -2,6 +2,7 @@ import cvlib as cv
 from cvlib.object_detection import draw_bbox
 import cv2
 from FilterSquare import FilterSquare
+from SetApex import SetApex
 
 video_src='s_lowelevation.MOV'
 
@@ -12,6 +13,9 @@ frame_height = int(cap.get(4))
 
 out = cv2.VideoWriter('outpy.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
 
+ret,img=cap.read()
+target = SetApex().getApex(img)
+# print(target)
 #bus_cascade=cv2.CascadeClassifier(cascade_src)
 
 while True: 
